@@ -18,6 +18,8 @@ export const createTask = (data: { title: string; description?: string }) => {
   return task;
 };
 
-export const getTasks = () => {
+export const getTasks = async () => {
+  throw new Error("Async crash test");
   return tasks;
 };
+

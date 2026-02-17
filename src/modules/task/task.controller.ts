@@ -1,26 +1,22 @@
 import { Request, Response } from "express";
 import * as taskService from "./task.service";
 import { createTaskSchema } from "./task.schema";
-import { error } from "node:console";
+import { AppError } from "../../utils/AppError";
 
-export const createTask = (req: Request, res: Response) => {
+export const createTask = async (req: Request, res: Response) => {
   const parsedBody = createTaskSchema.safeParse(req.body);
   if (!parsedBody.success) {
-    return res.status(400).json({
-      status: 400,
-      error: "Bad_Request",
-      message: "Validation failed",
-      details: parsedBody.error.issues.map((issue) => ({
-        field: issue.path[0],
-        message: issue.message,
-    })),
-    });
+    throw new AppError(
+      400,
+      "Validation Failed",
+      "Validation error",
+    )
   }
-  const task = taskService.createTask(parsedBody.data);
+  const task = await taskService.createTask(parsedBody.data);
   res.status(201).json(task);
 };
 
-export const getTasks = (_req: Request, res: Response) => {
-  const tasks = taskService.getTasks();
+export const getTasks = async (_req: Request, res: Response) => {
+  const tasks = await taskService.getTasks();
   res.status(200).json(tasks);
 };
